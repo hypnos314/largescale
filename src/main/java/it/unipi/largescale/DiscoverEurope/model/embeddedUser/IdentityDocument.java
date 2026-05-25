@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
@@ -15,5 +16,5 @@ public class IdentityDocument {
     private String number;
 
     @Field("expiry_date")
-    private Instant expiryDate;
+    private LocalDate expiryDate;
 }

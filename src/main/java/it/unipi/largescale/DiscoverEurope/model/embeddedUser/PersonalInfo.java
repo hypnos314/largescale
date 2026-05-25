@@ -17,5 +17,18 @@ public class PersonalInfo {
 
     private String phone;
     private String nationality;
-    private int age;
+    @Field("date_of_birth")
+    private LocalDate dateOfBirth;
+
+    @Transient
+    private Integer age;
+    
+    public Integer getAge() {
+        if (this.dateOfBirth != null) {
+            return Period.between(this.dateOfBirth, LocalDate.now()).getYears();
+        }
+        return null;
+    }
+
+
 }
