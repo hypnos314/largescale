@@ -3,6 +3,7 @@ package it.unipi.largescale.DiscoverEurope.controller;
 import it.unipi.largescale.DiscoverEurope.DTO.LoginDTO;
 import it.unipi.largescale.DiscoverEurope.DTO.RegistrationDTO;
 import it.unipi.largescale.DiscoverEurope.DTO.UpdateProfileDTO;
+import it.unipi.largescale.DiscoverEurope.model.User;
 import it.unipi.largescale.DiscoverEurope.service.User_Service_Mongo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,11 +38,11 @@ public class User_Controller_Mongo {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDTO loginData){
-        boolean isLogged = userServiceMongo.loginUser(loginData.getEmail(), loginData.getPassword());
+    public ResponseEntity<?> login(@RequestBody LoginDTO loginData){
+        User user = userServiceMongo.loginUser(loginData.getEmail(), loginData.getPassword());
 
-        if(isLogged){
-            return ResponseEntity.ok("Login successful"); //200 ok
+        if(user != null){
+            return ResponseEntity.ok(user); //200 ok
 
         }else{
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credentials not valid"); //401 unauthorized
