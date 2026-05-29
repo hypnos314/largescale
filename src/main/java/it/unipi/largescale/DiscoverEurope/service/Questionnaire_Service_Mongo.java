@@ -126,3 +126,7 @@ public class Questionnaire_Service_Mongo {
         }
     }
 }
+
+public List<Questionnaire> getByUserId(String userId) {
+    return questionnaireMongoInterface.findByUserId(userId);
+}
