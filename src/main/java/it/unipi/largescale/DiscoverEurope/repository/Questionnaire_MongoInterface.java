@@ -8,3 +8,5 @@ import java.util.Optional;
 public interface Questionnaire_MongoInterface extends MongoRepository<Questionnaire, String> {
     Optional<Questionnaire> findTopByUserIdOrderBySubmittedAtDesc(String userId);
 }
+
+List<Questionnaire> findByUserId(String userId);
