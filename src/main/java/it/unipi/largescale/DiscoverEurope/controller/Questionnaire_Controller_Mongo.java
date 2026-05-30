@@ -1,30 +1,38 @@
 package it.unipi.largescale.DiscoverEurope.controller;
+
+import it.unipi.largescale.DiscoverEurope.DTO.QuestionnaireRequestDTO;
+import it.unipi.largescale.DiscoverEurope.model.Questionnaire;
+import it.unipi.largescale.DiscoverEurope.service.Questionnaire_Service_Mongo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/questionnaires")
-
 public class Questionnaire_Controller_Mongo {
-}
-@Autowired
+    @Autowired
     private Questionnaire_Service_Mongo questionnaireService;
 
-List<Questionnaire> userQuestionnaires = questionnaireService.getByUserId(userId);
-
-@PostMapping
-
-  public ResponseEntity<Questionnaire> submitQuestionnaire(@RequestBody QuestionnaireRequest request) {
-    Questionnaire savedQuestionnaire = questionnaireService.saveQuestionnaire(
-                request.getUserId(), 
+    @PostMapping("/user/submit")
+    public ResponseEntity<Questionnaire> submitQuestionnaire(@RequestBody QuestionnaireRequestDTO request) {
+        Questionnaire savedQuestionnaire = questionnaireService.saveQuestionnaire(
+                request.getUserId(),
                 request.getPreferences()
         );
-    return new ResponseEntity<>(savedQuestionnaire, HttpStatus.CREATED);
+        return new ResponseEntity<>(savedQuestionnaire, HttpStatus.CREATED);
     }
 
-@GetMapping("/user/{userId}")
+    @GetMapping("/user/{userId}")
     public ResponseEntity<List<Questionnaire>> getUserQuestionnaires(@PathVariable String userId) {
         // Chiede al service la lista dei questionari
         List<Questionnaire> questionnaires = questionnaireService.getByUserId(userId);
-        
+
         // Restituisce la lista e lo status code 200 (OK)
         return ResponseEntity.ok(questionnaires);
     }
 }
+
+
