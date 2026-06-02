@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Comparator;
@@ -39,14 +40,23 @@ public class Questionnaire_Service_Mongo {
 
     //Logica per calcolare il match score dei suggerimenti di pacchetti
     private Suggestion generateSuggestions(Feature preferences){
-        // 1. Chiedi a MongoDB di fare tutto il lavoro e restituirti i 3 vincitori leggeri
+        // Chiedi a MongoDB di fare tutto il lavoro e restituirti i 3 vincitori leggeri
         List<PackageScoreDTO> top3 = travelPackageMongoInterface.findTop3BestMatches(preferences);
 
-        // 2. Mappali nel tuo oggetto SuggPackage gestendo la sorpresa (come avevi già fatto benissimo)
+        // Mappali nel tuo oggetto SuggPackage gestendo la sorpresa (come avevi già fatto benissimo)
         List<SuggPackage> finalPackages = top3.stream().map(proj -> {
             SuggPackage sugg = new SuggPackage();
             sugg.setPackageId(new ObjectId(proj.getId()));
             sugg.setMatchScore(proj.getScore());
+            sugg.setPrice(proj.getPrice());
+
+            // Calcoliamo la durata (Differenza in giorni)
+            if (proj.getDepartureDate() != null && proj.getReturnDate() != null) {
+                long days = ChronoUnit.DAYS.between(proj.getDepartureDate(), proj.getReturnDate());
+                sugg.setDurationDays((int) days);
+            } else {
+                sugg.setDurationDays(0); // Fallback di sicurezza
+            }
 
             if (preferences.isSurprise()) {
                 sugg.setName("What will it be?"); // Oscuramento sorpresa

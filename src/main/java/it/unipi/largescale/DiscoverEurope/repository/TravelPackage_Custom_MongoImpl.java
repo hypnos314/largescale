@@ -68,7 +68,10 @@ public class TravelPackage_Custom_MongoImpl implements TravelPackage_Custom_Mong
                 calculateScore,
                 Aggregation.sort(Sort.Direction.DESC, "isPerfectMatch", "score"), // Ordina: prima perfect, poi score
                 Aggregation.limit(3), // PRENDI SOLO I PRIMI 3
-                Aggregation.project("title", "score", "isPerfectMatch") // Restituisci solo id, titolo e punteggi
+                Aggregation.project("title", "score", "isPerfectMatch")
+                        .and("city").as("destinationCity")// Restituisci solo id, titolo e punteggi
+                        .and("flightDetails.outboundFlight.departure.date").as("departureDate")
+                        .and("flightDetails.returnFlight.arrival.date").as("returnDate")
         );
 
         // ESEGUIAMO SUL DATABASE

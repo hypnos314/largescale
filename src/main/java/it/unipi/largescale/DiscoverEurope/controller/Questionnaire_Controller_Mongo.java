@@ -33,6 +33,26 @@ public class Questionnaire_Controller_Mongo {
         // Restituisce la lista e lo status code 200 (OK)
         return ResponseEntity.ok(questionnaires);
     }
+
+    @PutMapping("/{id}/select-package")
+    public ResponseEntity<String> selectPackage(
+            @PathVariable String id, // Cattura l'ID del questionario dall'URL
+            @RequestBody SelectPackageDTO request // Riceve il packageId nel Body
+    ) {
+        try {
+            String result = questionnaireService.selectPackage(id, request.getPackageId());
+
+            if (result.equals("Selection updated successfully")) {
+                return ResponseEntity.ok(result); // 200 OK
+            } else if (result.equals("Questionnaire not found")) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result); // 404
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result); // 400
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
+        }
+    }
 }
 
 

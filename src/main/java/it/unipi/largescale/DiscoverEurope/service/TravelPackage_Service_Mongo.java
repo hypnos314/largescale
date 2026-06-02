@@ -23,16 +23,15 @@ public class TravelPackage_Service_Mongo {
 
     //public List<TravelPackage> getRecommendedPackages(String userId); serve interfaccia Neo4j
 
-    //public List<TravelPackage> getSurprisePackages(String userId); forse serve Neo4j
+    //List<TravelPackage> getPopularPackages(); serve l'interfaccia di Neo4j
 
     public TravelPackage getPackageDetails(String packageId){
         return travelPackageMongoInterface.findById(packageId)
                 .orElseThrow(()-> new RuntimeException("Travel package not found: " + packageId));
     }
 
-    //List<TravelPackage> getPopularPackages(); serve l'interfaccia di Neo4j
-
-    public List<TravelPackage> getPersonalizedPackages(String userId){
+    //prende i dettagli dei pacchetti suggeriti dell'ultimo questionario
+    public List<TravelPackage> getSuggestedPackages(String userId){
 
         // Cerchiamo l'ultimo questionario compilato dall'utente nella collection separata
         Optional<Questionnaire> latestQuestionnaireOpt = questionnaireMongoInterface

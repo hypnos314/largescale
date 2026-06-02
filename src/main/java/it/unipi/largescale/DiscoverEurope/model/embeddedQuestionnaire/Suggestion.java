@@ -1,5 +1,6 @@
 package it.unipi.largescale.DiscoverEurope.model.embeddedQuestionnaire;
 
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

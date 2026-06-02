@@ -15,4 +15,7 @@ public class SuggPackage {
     @Field("match_score")
     private double matchScore;
     private String name;
+
+    private double price;
+    private int durationDays;
 }
