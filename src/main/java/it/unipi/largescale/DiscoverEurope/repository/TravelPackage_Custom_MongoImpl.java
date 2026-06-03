@@ -24,10 +24,6 @@ public class TravelPackage_Custom_MongoImpl implements TravelPackage_Custom_Mong
         List<String> userInterests = prefs.getInterests() != null ? prefs.getInterests() : List.of(); //prendiamo gli interessi dell'utente se non vuoti
         String interestsArray = userInterests.stream().map(i -> "'" + i + "'").collect(Collectors.joining(",")); //.stream prende ogni parola,
                                                                                                                                 //.map modifica il formato in nuova versione,
-                                                                                                                                //.collect unisce tutti gli elementi in un'unica stringa
-                                                                                                                                //mettendo una virgola tra una stringa e l'altra
-
-
         String addFieldsStage = "{" +
                 "$addFields: {" +
                     "isPerfectMatch: {" +
@@ -57,12 +53,7 @@ public class TravelPackage_Custom_MongoImpl implements TravelPackage_Custom_Mong
 
         AggregationOperation calculateScore = context -> context.getMappedObject(org.bson.Document.parse(addFieldsStage)); //context serve a far capire all'operazione di aggregazione
                                                                                                                                                     //i campi e le classi da usare (il contesto da prendere)
-
-                                                                                                                                                    //org.bson... serve a tradurre la stringa Java in binary json
-                                                                                                                                                    //usato in mongo
-
-                                                                                                                                                    //getMappedObject aggiusta automaticamente la differenza di notazione
-                                                                                                                                                    //tra mongo e il codice java
+                                                                                                                                           //tra mongo e il codice java
         // PIPELINE
         Aggregation aggregation = Aggregation.newAggregation(
                 calculateScore,

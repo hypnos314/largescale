@@ -1,6 +1,7 @@
 package it.unipi.largescale.DiscoverEurope.controller;
 
 import it.unipi.largescale.DiscoverEurope.DTO.QuestionnaireRequestDTO;
+import it.unipi.largescale.DiscoverEurope.DTO.SelectPackageDTO;
 import it.unipi.largescale.DiscoverEurope.model.Questionnaire;
 import it.unipi.largescale.DiscoverEurope.service.Questionnaire_Service_Mongo;
 import org.springframework.beans.factory.annotation.Autowired;

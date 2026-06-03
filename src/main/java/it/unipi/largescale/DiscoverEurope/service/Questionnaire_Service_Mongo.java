@@ -59,19 +59,58 @@ public class Questionnaire_Service_Mongo {
             }
 
             if (preferences.isSurprise()) {
-                sugg.setName("What will it be?"); // Oscuramento sorpresa
+                // Prende il titolo originale
+                String originalTitle = proj.getTitle();
+                String hiddenTitle = originalTitle.replace(proj.getDestinationCity(), "a Mystery Destination");
+                sugg.setName(hiddenTitle);
             } else {
                 sugg.setName(proj.getTitle());
             }
             return sugg;
         }).collect(Collectors.toList());
 
-        // 3. Ritorna il risultato
+        // Ritorna il risultato
         Suggestion suggestion = new Suggestion();
         suggestion.setSuggestedAt(Instant.now());
         suggestion.setPackages(finalPackages);
 
         return suggestion;
+    }
+
+    public String selectPackage(String questionnaireId, String packageId) {
+        try {
+            if (!ObjectId.isValid(packageId)) {
+                return "Invalid Package ID format";
+            }
+            // Cerchiamo il questionario nel DB
+            var questionnaireOpt = questionnaireMongoInterface.findById(questionnaireId);
+            if (questionnaireOpt.isEmpty()) {
+                return "Questionnaire not found";
+            }
+
+            Questionnaire questionnaire = questionnaireOpt.get();
+
+            // Controllo di sicurezza: assicuriamoci che ci sia l'oggetto delle preferenze/suggerimenti
+            if (questionnaire.getGeneratedSuggestions() == null) {
+                return "No generated suggestions found for this questionnaire";
+            }
+
+
+            // Aggiorniamo il campo embedded 'user_selection' (all'interno di Suggestion)
+            Suggestion suggestion = questionnaire.getGeneratedSuggestions();
+            suggestion.setUserSelection(new ObjectId(packageId)); // Convertiamo la stringa in ObjectId nativo Mongo
+
+            // Re-impostiamo l'oggetto aggiornato nel questionario
+            questionnaire.setGeneratedSuggestions(suggestion);
+
+            // Salva le modifiche su MongoDB
+            questionnaireMongoInterface.save(questionnaire);
+
+            return "Selection updated successfully";
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error while updating package selection in questionnaire", e);
+        }
     }
 
 

@@ -16,6 +16,17 @@ public class User_Controller_Mongo {
     @Autowired
     private User_Service_Mongo userServiceMongo;
 
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> getUserProfile(@PathVariable String userId) {
+        try {
+            User user = userServiceMongo.getUserAccount(userId);
+
+            return ResponseEntity.ok(user); // restituisce i dati dell'utente in formato JSON
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+    }
+
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegistrationDTO request){
         try{
