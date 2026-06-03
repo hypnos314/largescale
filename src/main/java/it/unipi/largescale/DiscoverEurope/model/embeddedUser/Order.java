@@ -13,13 +13,17 @@ import java.time.Instant;
 public class Order {
     @Field("package_id")
     private String packageId;
-
     private String destination;
-    private Instant date;
+    @Field("purchase_date")
+    private Instant purchaseDate;
     private double price;
     @Field("order_status")
-    private OrderStatus orderStatus;
+    private String orderStatus;
     @Field("is_surprise")
     private boolean isSurprise;
     private String name;
+    @Field("censored_title")
+    private String censoredTitle;
+    @Field("return_date")
+    private Instant returnDate;
 }

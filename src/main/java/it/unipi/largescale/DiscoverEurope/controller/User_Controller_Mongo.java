@@ -27,6 +27,37 @@ public class User_Controller_Mongo {
         }
     }
 
+    /*
+
+    // ==========================================
+    // RECUPERA LO STORICO VIAGGI (ORDINI)
+    // ==========================================
+    @GetMapping("/{userId}/history")
+    public ResponseEntity<List<Order>> getUserHistory(@PathVariable String userId) {
+        try {
+            // 1. Cerchiamo l'utente nel database
+            Optional<User> userOpt = user_Interf_Mongo.findById(userId);
+
+            if (userOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404
+            }
+
+            // 2. Estraiamo la sua lista di ordini
+            List<Order> history = userOpt.get().getOrders();
+
+            // 3. Se la lista è null (nessun ordine mai fatto), restituiamo una lista vuota
+            if (history == null) {
+                return ResponseEntity.ok(new ArrayList<>());
+            }
+
+            // 4. Restituiamo lo storico al frontend
+            return ResponseEntity.ok(history); // 200 OK
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500
+        }
+    }
+    */
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegistrationDTO request){
         try{

@@ -1,6 +1,7 @@
 package it.unipi.largescale.DiscoverEurope.model;
 
-import jakarta.persistence.Id;
+//import jakarta.persistence.Id;
+import org.springframework.data.annotation.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,7 @@ public class Review {
     @Id
     private String id;
     @Field("user_id")
-    private String userId; //secondo me puzza
+    private String userId;
     @Field("package_id")
     private String packageId;
 

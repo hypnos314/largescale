@@ -2,6 +2,7 @@ package it.unipi.largescale.DiscoverEurope.service;
 
 import it.unipi.largescale.DiscoverEurope.model.Review;
 import it.unipi.largescale.DiscoverEurope.model.TravelPackage;
+import it.unipi.largescale.DiscoverEurope.model.embeddedPackage.Rating;
 import it.unipi.largescale.DiscoverEurope.model.embeddedPackage.ReviewPackage;
 import it.unipi.largescale.DiscoverEurope.repository.Review_MongoInterface;
 import it.unipi.largescale.DiscoverEurope.repository.TravelPackage_MongoInterface;
@@ -23,9 +24,7 @@ public class Review_Service_Mongo {
         // Funzione chiamata dal Controller quando l'utente invia una recensione
         public String createReview(String userId, String userName, String packageId, String packageTitle, double rating, String comment, boolean isSurprise) {
             try {
-                // ==========================================
-                // 1. SALVATAGGIO NELLA COLLEZIONE 'REVIEWS'
-                // ==========================================
+
                 Review newReview = new Review();
                 newReview.setUserId(userId);
                 newReview.setUserName(userName);
@@ -38,10 +37,7 @@ public class Review_Service_Mongo {
 
                 reviewRepository.save(newReview);
 
-                // ==========================================
-                // 2. SINCRONIZZAZIONE CON 'TRAVEL_PACKAGES'
-                // ==========================================
-                syncPackageReviewsAndRating(packageId);
+                syncPackageReviewsAndRating(packageId, rating);
 
                 return "Review submitted successfully";
 
@@ -51,19 +47,15 @@ public class Review_Service_Mongo {
         }
 
         // Metodo privato di supporto per tenere il codice pulito
-        private void syncPackageReviewsAndRating(String packageId) {
-            // Recupera il pacchetto da aggiornare
+        private void syncPackageReviewsAndRating(String packageId, double newRating) {
             TravelPackage pkg = travelPackageRepository.findById(packageId)
                     .orElseThrow(() -> new RuntimeException("Package not found"));
 
-            // Recupera TUTTE le recensioni di questo pacchetto (già ordinate dalla più recente)
-            List<Review> allPackageReviews = reviewRepository.findByPackageIdOrderByCreatedAtDesc(packageId);
+            // Recuperiamo SOLO le ultime 3 recensioni
+            List<Review> top3Reviews = reviewRepository.findTop3ByPackageIdOrderByCreatedAtDesc(packageId);
 
-            // A. Calcolo delle ultime 3 recensioni
-            List<ReviewPackage> latest3 = allPackageReviews.stream()
-                    .limit(3)
+            List<ReviewPackage> latest3 = top3Reviews.stream()
                     .map(rev -> {
-                        // Mappa l'oggetto Review globale nell'oggetto ridotto ReviewPackage che sta nel TravelPackage
                         ReviewPackage rp = new ReviewPackage();
                         rp.setUserName(rev.getUserName());
                         rp.setPackageTitle(rev.getPackageTitle());
@@ -76,20 +68,27 @@ public class Review_Service_Mongo {
 
             pkg.setLatestReviews(latest3);
 
-            // B. (Bonus) Aggiornamento automatico della media recensioni (Rating Summary)
-            // Visto che nel JSON hai "rating_summary", è fondamentale aggiornare anche quello!
-            double newAverage = allPackageReviews.stream()
-                    .mapToDouble(Review::getRating)
-                    .average()
-                    .orElse(0.0);
+            // Aggiornamento della Media
+            // Controllo di sicurezza: se il pacchetto non aveva mai ricevuto recensioni prima
+            if (pkg.getRatingSummary() == null) {
+                pkg.setRatingSummary(new Rating());
+                pkg.getRatingSummary().setTotalReviews(0);
+                pkg.getRatingSummary().setAverage(0.0);
+            }
 
-            // Arrotonda a due decimali (es. 4.02)
+            int oldCount = pkg.getRatingSummary().getTotalReviews();
+            double oldAverage = pkg.getRatingSummary().getAverage();
+
+            // Formula matematica per la nuova media: ((Vecchia Media * Vecchio Conteggio) + Nuovo Voto) / Nuovo Conteggio
+            double newAverage = ((oldAverage * oldCount) + newRating) / (oldCount + 1);
             newAverage = Math.round(newAverage * 100.0) / 100.0;
 
             pkg.getRatingSummary().setAverage(newAverage);
-            pkg.getRatingSummary().setTotalReviews(allPackageReviews.size());
+            pkg.getRatingSummary().setTotalReviews(oldCount + 1);
 
-            // Salva il pacchetto sovrascrivendo i vecchi dati con quelli aggiornati
+            // Salviamo il pacchetto aggiornato
             travelPackageRepository.save(pkg);
         }
+
+        // List<Review> getLandingPageReviews(); Per la front page
 }

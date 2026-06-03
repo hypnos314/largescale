@@ -15,6 +15,12 @@ public class Item {
     private String packageId;
     private String name;
     private double price;
+    @Field("is_surprise")
+    private boolean isSurprise;
+    @Field("censored_title")
+    private String censoredTitle;
+    @Field("return_date")
+    private Instant returnDate;
     @Field("added_at")
     private Instant addedAt;
 }

@@ -2,7 +2,7 @@ package it.unipi.largescale.DiscoverEurope.model;
 
 import it.unipi.largescale.DiscoverEurope.model.embeddedPackage.Feature;
 import it.unipi.largescale.DiscoverEurope.model.embeddedQuestionnaire.Suggestion;
-import jakarta.persistence.Id;
+import org.springframework.data.annotation.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
