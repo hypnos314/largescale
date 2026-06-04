@@ -74,8 +74,6 @@ public class CartAndOrder_Service_Mongo {
         // PREPARIAMO LA CENSURA E LA SALVIAMO A PARTE
         if (isSurprise && pkg.getCity() != null) {
             newItem.setCensoredTitle(pkg.getTitle().replace(pkg.getCity(), "a Mystery Destination"));
-        } else {
-            newItem.setCensoredTitle(pkg.getTitle());
         }
 
         cart.getItems().add(newItem);
