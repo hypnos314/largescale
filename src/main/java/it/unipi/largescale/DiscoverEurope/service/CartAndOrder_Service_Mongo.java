@@ -66,7 +66,7 @@ public class CartAndOrder_Service_Mongo {
         newItem.setPackageId(pkg.getId());
         newItem.setPrice(pkg.getPrice());
         newItem.setSurprise(isSurprise);
-        newItem.setReturnDate(pkg.getFlightDetails().getReturnFlight().getArrival().getDate());
+        newItem.setReturnDate(pkg.getFlightDetails().getReturnFlight().getArrival().getAt());
 
         // IL NOME REALE VA NEL CAMPO STANDARD
         newItem.setName(pkg.getTitle());
