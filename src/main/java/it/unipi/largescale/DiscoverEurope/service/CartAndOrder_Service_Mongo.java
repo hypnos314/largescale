@@ -104,7 +104,7 @@ public class CartAndOrder_Service_Mongo {
 
         for (Item item : cart.getItems()) {
             Order newOrder = new Order();
-            //newOrder.setOrderId(UUID.randomUUID().toString());
+            newOrder.setOrderId(UUID.randomUUID().toString());
             newOrder.setPackageId(item.getPackageId());
             newOrder.setPrice(item.getPrice());
             newOrder.setSurprise(item.isSurprise());
