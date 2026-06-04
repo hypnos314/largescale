@@ -11,6 +11,8 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Order {
+    @Field("order_id")
+    private String orderId;
     @Field("package_id")
     private String packageId;
     private String destination;
