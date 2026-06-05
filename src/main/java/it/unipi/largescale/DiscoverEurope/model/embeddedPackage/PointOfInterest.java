@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Data
 @AllArgsConstructor
@@ -14,5 +15,6 @@ public class PointOfInterest {
     private String name;
     private String category; //potrebbe essere enum
     @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE) //crea un indice geospaziale, utile per performance
+    @JsonIgnoreProperties({"x", "y"}) //per togliere le doppie coordinate quando si fa il get
     private GeoJsonPoint location;
 }

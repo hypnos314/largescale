@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
 
 import java.time.Instant;
 
@@ -17,11 +18,10 @@ import java.time.Instant;
 public class Review {
     @Id
     private String id;
-    @Field("user_id")
+    @Field(name = "user_id", targetType = FieldType.OBJECT_ID)
     private String userId;
-    @Field("package_id")
+    @Field(name = "package_id", targetType = FieldType.OBJECT_ID)
     private String packageId;
-
     @Field("user_name")
     private String userName;
     @Field("package_title")

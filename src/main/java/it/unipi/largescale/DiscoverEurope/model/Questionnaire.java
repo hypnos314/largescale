@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
 
 import java.time.Instant;
 
@@ -18,7 +19,7 @@ import java.time.Instant;
 public class Questionnaire {
     @Id
     private String id;
-    @Field("user_id")
+    @Field(name = "user_id", targetType = FieldType.OBJECT_ID)
     private String userId;
     @Field("submitted_at")
     private Instant submittedAt;

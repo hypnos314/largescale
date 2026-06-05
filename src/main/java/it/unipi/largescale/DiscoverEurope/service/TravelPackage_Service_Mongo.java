@@ -32,27 +32,38 @@ public class TravelPackage_Service_Mongo {
 
     //prende i dettagli dei pacchetti suggeriti dell'ultimo questionario
     public List<TravelPackage> getSuggestedPackages(String userId){
+        System.out.println("--- DEBUG SUGGERIMENTI ---");
+        System.out.println("1. Cerco questionario per User ID: " + userId);
 
-        // Cerchiamo l'ultimo questionario compilato dall'utente nella collection separata
         Optional<Questionnaire> latestQuestionnaireOpt = questionnaireMongoInterface
                 .findTopByUserIdOrderBySubmittedAtDesc(userId);
 
-        // Se non ha mai fatto un questionario (o se per qualche motivo non ha suggerimenti), lista vuota
-        if (latestQuestionnaireOpt.isEmpty() || latestQuestionnaireOpt.get().getGeneratedSuggestions() == null) {
+        if (latestQuestionnaireOpt.isEmpty()) {
+            System.out.println(" BLOCCO 1: Nessun questionario trovato per questo utente nel DB!");
             return new ArrayList<>();
         }
 
         Questionnaire latestQuestionnaire = latestQuestionnaireOpt.get();
+        System.out.println(" Questionario trovato! ID: " + latestQuestionnaire.getId());
 
-        // Estraiamo gli ID dei pacchetti vincenti generati dalla nostra Aggregation Pipeline
+        if (latestQuestionnaire.getGeneratedSuggestions() == null) {
+            System.out.println(" BLOCCO 2: Il questionario è stato trovato, ma 'generatedSuggestions' è NULL. (Problema di mappatura tra Java e Mongo)");
+            return new ArrayList<>();
+        }
+
         List<String> suggestedIds = latestQuestionnaire.getGeneratedSuggestions().getPackages()
                 .stream()
                 .map(sugg -> sugg.getPackageId().toString())
                 .collect(Collectors.toList());
 
-        // Scarichiamo le schede complete dei pacchetti da MongoDB
+        System.out.println(" ID Pacchetti estratti: " + suggestedIds);
+
         List<TravelPackage> results = new ArrayList<>();
-        travelPackageMongoInterface.findAllById(suggestedIds).forEach(results::add); //prende i pacchetti generati, li mette nella lista results
+        travelPackageMongoInterface.findAllById(suggestedIds).forEach(results::add);
+
+        System.out.println(" Pacchetti reali trovati in TravelPackages: " + results.size());
+        System.out.println("--------------------------");
+
         return results;
     }
 }
