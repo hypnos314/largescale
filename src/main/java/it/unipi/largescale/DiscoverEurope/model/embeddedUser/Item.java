@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -14,6 +15,7 @@ public class Item {
     @Field("package_id")
     private String packageId;
     private String name;
+    //private String destination;
     private double price;
     @Field("is_surprise")
     private boolean isSurprise;
@@ -21,6 +23,9 @@ public class Item {
     private String censoredTitle;
     @Field("return_date")
     private Instant returnDate;
+    //@Field("departure_date")
+    //private Instant departureDate;
+    //private List<String> clues;
     @Field("added_at")
     private Instant addedAt;
 }

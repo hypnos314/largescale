@@ -6,11 +6,14 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Order {
+    @Field("order_id")
+    private String orderId;
     @Field("package_id")
     private String packageId;
     private String destination;
@@ -26,4 +29,7 @@ public class Order {
     private String censoredTitle;
     @Field("return_date")
     private Instant returnDate;
+    @Field("departure_date")
+    private Instant departureDate;
+    private List<String> clues;
 }

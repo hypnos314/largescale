@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -67,6 +69,11 @@ public class CartAndOrder_Service_Mongo {
         newItem.setPrice(pkg.getPrice());
         newItem.setSurprise(isSurprise);
         newItem.setReturnDate(pkg.getFlightDetails().getReturnFlight().getArrival().getDate());
+        //newItem.setDestination(pkg.getCity());
+        //newItem.setDepartureDate(pkg.getFlightDetails().getOutboundFlight().getDeparture().getDate());
+        //if (isSurprise) {
+        //    newItem.setClues(pkg.getClues());
+        //}
 
         // IL NOME REALE VA NEL CAMPO STANDARD
         newItem.setName(pkg.getTitle());
@@ -74,8 +81,6 @@ public class CartAndOrder_Service_Mongo {
         // PREPARIAMO LA CENSURA E LA SALVIAMO A PARTE
         if (isSurprise && pkg.getCity() != null) {
             newItem.setCensoredTitle(pkg.getTitle().replace(pkg.getCity(), "a Mystery Destination"));
-        } else {
-            newItem.setCensoredTitle(pkg.getTitle());
         }
 
         cart.getItems().add(newItem);
@@ -105,13 +110,23 @@ public class CartAndOrder_Service_Mongo {
         }
 
         for (Item item : cart.getItems()) {
+
+            Optional<TravelPackage> travelPackageOptional = travelPackageRepository.findById(item.getPackageId()); //da togliere
+            if(travelPackageOptional.isEmpty()){//da togliere
+                return "Travel package not found";//da togliere
+            }
+            TravelPackage travelPackage = travelPackageOptional.get();//da togliere
             Order newOrder = new Order();
-            //newOrder.setOrderId(UUID.randomUUID().toString());
+            newOrder.setOrderId(UUID.randomUUID().toString());
+            //newOrder.setDestination(item.getDestination());
             newOrder.setPackageId(item.getPackageId());
             newOrder.setPrice(item.getPrice());
             newOrder.setSurprise(item.isSurprise());
             newOrder.setPurchaseDate(Instant.now()); // Data di ACQUISTO
             newOrder.setOrderStatus("CONFIRMED");
+            newOrder.setDestination(travelPackage.getCity()); //da togliere
+            //newOrder.setDepartureDate(item.getDepartureDate());
+            //newOrder.setClues(item.getClues());
 
             // TRAVASIAMO I DATI DAL CARRELLO ALL'ORDINE
             newOrder.setName(item.getName()); // Qui dentro c'è il VERO titolo
@@ -148,11 +163,30 @@ public class CartAndOrder_Service_Mongo {
                 // Se la data NON è ancora passata, nascondiamo il titolo vero
                 if (order.getReturnDate() == null || !now.isAfter(order.getReturnDate())) {
                     order.setName(order.getCensoredTitle());
+                    order.setDestination("Classified");
                 }
                 // (Se è passata, non facciamo nulla: il DB ha già il packageTitle originale intatto!)
+                // LOGICA DEGLI INDIZI (Svelamento 3 giorni prima della Partenza)
+                /*if (order.getDepartureDate() != null) {
+                    // Calcoliamo l'istante esatto di "3 giorni prima"
+                    Instant threeDaysBefore = order.getDepartureDate().minus(3, ChronoUnit.DAYS);
+
+                    // Se OGGI è PRIMA del giorno dello svelamento...
+                    if (now.isBefore(threeDaysBefore)) {
+                        // ...nascondiamo gli indizi in RAM!
+                        order.setClues(null);
+                    }
+                    // Altrimenti (se mancano 3 giorni o meno), lasciamo gli indizi intatti!
+                }
+
+            } else {
+                // Se NON è una sorpresa, non ci interessano gli indizi
+                order.setClues(null);
+            }
+
+            */
             }
         }
-
         return history;
     }
 }
