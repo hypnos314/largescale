@@ -18,7 +18,7 @@ public class CartAndOrder_Controller_Mongo {
         private CartAndOrder_Service_Mongo cartAndOrderService;
 
         // ==========================================
-        // 1. Visualizza il carrello
+        // 1. Visualizza il carrello, ciao
         // ==========================================
         @GetMapping("/cart")
         public ResponseEntity<?> getUserCart(@PathVariable String userId) {
